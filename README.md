@@ -48,7 +48,17 @@ Repozitář může být klidně veřejný — je v něm jen kód, žádná data.
 
 ## Synchronizace přes Supabase
 
-Bez tohohle kroku appka funguje, ale mobil a počítač mají oddělené historie.
+**Hotovo a zapnuté** — projekt `skincare` (`xaoihcfkwjlzupwbnhbx`, Frankfurt). Zbývá jen se přihlásit: appka → **Protokol → Synchronizace** → zadej e-mail → klikni na odkaz, který ti přijde.
+
+Ověřeno naostro:
+
+- nepřihlášený nepřečte nic a zápis dostane `42501 row-level security`
+- přihlášený vidí jen svůj řádek, i když se zeptá na celou tabulku
+- pokus přepsat cizí data změní nula řádků
+
+Publishable klíč (`sb_publishable_…`) v `app.js` je určený do prohlížeče a smí být ve veřejném repozitáři. **Secret klíč** (`sb_secret_…`) do kódu nikdy nepatří — obchází RLS.
+
+Postup níže je záznam toho, co bylo nastaveno, kdyby to bylo potřeba zopakovat.
 
 ### 1. Založ projekt
 
@@ -110,6 +120,12 @@ Anon klíč je určený do prohlížeče, veřejný repozitář mu nevadí — c
 Otevři <https://dejv77.github.io/skincare/> → **Protokol → Synchronizace**, zadej e-mail. Přijde odkaz, po kliknutí jsi přihlášen a odznak vpravo nahoře přepne na „Synchronizováno". Totéž na mobilu a historie se slučuje.
 
 Free tier Supabase pozastaví projekt po týdnu úplné nečinnosti — u appky, kterou otevíráš denně, to nenastane. Obnovíš ho jedním kliknutím v dashboardu.
+
+### Limit odesílaných e-mailů
+
+Vestavěný mailer na free tieru zvládne jen **pár přihlašovacích e-mailů za hodinu**. Na běžné použití to stačí — přihlásíš se jednou na počítači, jednou na mobilu, a session pak drží měsíce. Když ale během chvíle zkusíš přihlášení víckrát, Supabase vrátí `email rate limit exceeded` a musíš počkat. Není to chyba appky.
+
+Kdyby to začalo vadit, jde v **Authentication → Emails → SMTP Settings** připojit vlastní SMTP (Resend, Postmark) a limit zmizí.
 
 Slučování jede po dnech — vyhrává novější záznam. Když si tedy ráno odškrtneš na mobilu a večer na počítači, obojí se zachová.
 
