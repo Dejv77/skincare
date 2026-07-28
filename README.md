@@ -1,0 +1,120 @@
+# Péče o pleť
+
+Webová aplikace na sledování denní rutiny péče o pleť. Odškrtávání po jednotlivých krocích, denní stav pleti, dvanáctitýdenní historie a statistiky dodržování.
+
+Funguje **hned po otevření** `index.html` — data se ukládají do prohlížeče. Synchronizace mezi mobilem a počítačem je volitelná, přidává se nastavením Supabase (níže).
+
+## Soubory
+
+| Soubor | Co dělá |
+|---|---|
+| `index.html` | Kostra a statický obsah protokolu |
+| `app.js` | Rozvrh, logika, statistiky, sync — **tady se konfiguruje Supabase** |
+| `style.css` | Vzhled |
+| `sw.js` | Service worker, offline běh |
+| `manifest.json`, `icon.svg` | PWA — přidání na plochu |
+| `skincare.html` | Původní statický list, ponechán pro tisk |
+
+## Jak se používá
+
+**Dnes** — dnešní ráno a večer podle aktuální fáze. Odškrtáváš kroky, dole označíš holení, stav pleti a poznámku. U retinalových večerů je u kroku „Čekej 20 min" tlačítko s odpočtem. Šipkami se dá vrátit do minulých dnů a doplnit je zpětně.
+
+**Holení** není jen štítek — mění rutinu:
+
+- **Ráno** → v seznamu kroků se Sisleÿum automaticky nahradí za Apaisante Réparatrice. Odškrtnutí zůstává, i když příznak přepneš (krok si drží stejné `id`).
+- **Večer** → pokud na ten den vychází retinal, appka to červeně připomene. Bariéra je po holení porušená, retinal patří jinam.
+
+V historii se holení počítá a v kalendáři je vidět jako fialový proužek na levém okraji políčka. Když se ti stane, že si dáš retinal po večerním holení, objeví se statistika **Kolize** — přesně ta věc, kterou chceš po pár týdnech vidět, když pleť zlobí.
+
+**Historie** — čtyři statistiky, kalendářová mřížka za 12 týdnů a seznam nejčastěji vynechaných kroků. Kliknutí na políčko v kalendáři otevře ten den. Zelené = vše splněno, oranžové = částečně, tečka v rohu = zaznamenaný stav pleti, oranžový rámeček = retinalový den.
+
+**Protokol** — přepínač fází, celý rozvrh, pravidla a poznámky. Změna fáze platí od dneška dopředu; minulé dny si drží fázi, ve které skutečně byly, takže se historie zpětně nepřepíše.
+
+## Nasazení na GitHub Pages
+
+Repozitář už běží na <https://dejv77.github.io/skincare/>. Změny se nasadí samy po pushnutí:
+
+```bash
+git add .
+git commit -m "Popis změny"
+git push
+```
+
+Na mobilu otevři tu adresu a dej **Sdílet → Přidat na plochu**. Otevírá se pak jako aplikace, bez adresního řádku.
+
+Po každé změně souborů zvyš `CACHE` v `sw.js` (`skincare-v2` → `v3`), jinak si prohlížeč může držet starou verzi.
+
+Repozitář může být klidně veřejný — je v něm jen kód, žádná data. Ta jsou v prohlížeči, případně v Supabase za přihlášením.
+
+## Synchronizace přes Supabase
+
+Bez tohohle kroku appka funguje, ale mobil a počítač mají oddělené historie.
+
+### 1. Založ projekt
+
+Na [supabase.com](https://supabase.com) → **New project**. Free tier stačí. Region Frankfurt.
+
+### 2. Vytvoř tabulku
+
+V **SQL Editor** spusť:
+
+```sql
+create table skincare_state (
+  user_id uuid primary key references auth.users on delete cascade,
+  payload jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+
+alter table skincare_state enable row level security;
+
+-- Každý vidí a mění jen svůj řádek.
+create policy "vlastni data" on skincare_state
+  for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+```
+
+Row level security je to podstatné — bez ní by anon klíč v kódu umožnil číst data komukoli.
+
+### 3. Doplň klíče
+
+**Settings → API**, zkopíruj `Project URL` a `anon public` klíč do prvních řádků `app.js`:
+
+```js
+const SUPABASE_URL = "https://xxxxx.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbG...";
+```
+
+Anon klíč je určený do prohlížeče, veřejný repozitář mu nevadí — chrání ho ta RLS politika výše. `service_role` klíč do kódu **nikdy** nepatří.
+
+### 4. Povol adresu appky
+
+**Authentication → URL Configuration** → do *Redirect URLs* přidej `https://UZIVATEL.github.io/skincare/`. Bez toho přihlašovací odkaz z e-mailu nikam nevede.
+
+### 5. Přihlas se
+
+Push, otevři appku, záložka **Protokol → Synchronizace**, zadej e-mail. Přijde odkaz, po kliknutí jsi přihlášen. Totéž na druhém zařízení a historie se slučuje.
+
+Slučování jede po dnech — vyhrává novější záznam. Když si tedy ráno odškrtneš na mobilu a večer na počítači, obojí se zachová.
+
+## Záloha
+
+**Protokol → Záloha dat → Exportovat** stáhne celou historii jako JSON. Import ji sloučí zpět. Dělej to občas i se zapnutým Supabase.
+
+## Fázování retinalu
+
+| Fáze | Týden | Retinalové večery |
+|---|---|---|
+| 1 | 1–2 | Út, Pá |
+| 2 | 3–4 | Po, St, Pá |
+| 3 | 5+ | Po–Pá + Ne |
+
+Fáze se přepíná ručně v záložce Protokol — appka ji nezvyšuje sama, protože posun závisí na tom, jak pleť reaguje, ne na kalendáři. Ve fázi 2 ubývá peeling na jednou za čtrnáct dní, ve fázi 3 vypadává; sobota zůstává jediný večer bez retinalu.
+
+## Úpravy rozvrhu
+
+Všechno je v `app.js` nahoře: `PRODUCTS` (názvy), `MORNING` (ranní kroky), `EVENING_TEMPLATES` (typy večerů), `PHASES` (které večery kdy). Přidání kroku znamená přidat řádek — zbytek se dopočítá, včetně statistik.
+
+Kroky mají stabilní `id`. Když ho změníš, historická odškrtnutí toho kroku se rozpojí, takže radši měň jen `name` a `note`.
+
+Po každé změně souborů zvyš `CACHE` v `sw.js` (`skincare-v1` → `v2`), jinak si mobil může držet starou verzi.

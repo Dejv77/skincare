@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Týdenní protokol péče o pleť</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --glass:#160C1F;
+  --glass-2:#1F1129;
+  --glass-3:#291638;
+  --lit:#432060;
+  --ink:#F3EEF6;
+  --label:#B7A5C6;
+  --dim:#8B7A9A;
+  --emboss:#EDE9EF;
+  --tape:#100A15;
+  --amber:#D69B3E;
+  --amber-dim:#8A6427;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+  background:var(--glass);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  padding:0 0 4rem;
+}
+
+.wrap{max-width:1240px;margin:0 auto;padding:0 1.25rem}
+
+/* ---------- header ---------- */
+.masthead{
+  position:relative;
+  padding:3.5rem 0 2rem;
+  overflow:hidden;
+}
+.masthead::before{
+  content:"";
+  position:absolute;
+  top:-45%;left:50%;
+  width:min(760px,120%);height:520px;
+  transform:translateX(-50%);
+  background:radial-gradient(ellipse at center,var(--lit) 0%,rgba(67,32,96,0) 68%);
+  opacity:.55;
+  pointer-events:none;
+}
+.masthead > *{position:relative}
+
+.eyebrow{
+  font-family:var(--mono);
+  font-size:.66rem;
+  letter-spacing:.28em;
+  text-transform:uppercase;
+  color:var(--dim);
+  margin-bottom:1rem;
+}
+h1{
+  font-family:var(--mono);
+  font-weight:500;
+  font-size:clamp(1.65rem,4.4vw,2.6rem);
+  letter-spacing:-.01em;
+  line-height:1.1;
+}
+.sub{
+  color:var(--label);
+  max-width:44ch;
+  margin-top:.85rem;
+  font-size:.94rem;
+}
+
+/* ---------- week strip ---------- */
+.strip{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:4px;
+  margin-top:2.25rem;
+}
+.seg{
+  height:52px;
+  border-radius:3px;
+  background:var(--glass-2);
+  border:1px solid var(--glass-3);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:var(--mono);
+  font-size:.62rem;
+  letter-spacing:.16em;
+  color:var(--dim);
+}
+.seg[data-kind="retinol"]{
+  background:linear-gradient(180deg,rgba(214,155,62,.16),rgba(214,155,62,.05));
+  border-color:var(--amber-dim);
+  color:var(--amber);
+}
+.seg[data-kind="ritual"]{border-color:var(--lit);color:var(--label)}
+
+.strip-key{
+  display:flex;
+  flex-wrap:wrap;
+  gap:1.1rem;
+  margin-top:.85rem;
+  font-family:var(--mono);
+  font-size:.63rem;
+  letter-spacing:.1em;
+  color:var(--dim);
+  text-transform:uppercase;
+}
+.strip-key span{display:flex;align-items:center;gap:.45rem}
+.dot{width:8px;height:8px;border-radius:2px;background:var(--glass-3);border:1px solid var(--glass-3)}
+.dot.is-amber{background:var(--amber);border-color:var(--amber)}
+.dot.is-ritual{background:transparent;border-color:var(--lit)}
+
+/* ---------- section frame ---------- */
+.band{border-top:1px solid var(--glass-3);padding-top:1.75rem;margin-top:2.75rem}
+.band-title{
+  font-family:var(--mono);
+  font-size:.68rem;
+  letter-spacing:.26em;
+  text-transform:uppercase;
+  color:var(--dim);
+  margin-bottom:1.25rem;
+}
+
+/* ---------- dymo tape ---------- */
+.tape{
+  display:inline-block;
+  background:var(--tape);
+  color:var(--emboss);
+  font-family:var(--mono);
+  font-weight:600;
+  font-size:.66rem;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  padding:.42rem .7rem .38rem;
+  border-radius:2px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -2px 0 rgba(0,0,0,.5),0 2px 5px rgba(0,0,0,.45);
+  text-shadow:0 1px 0 rgba(0,0,0,.85);
+}
+.tape.is-amber{color:var(--amber)}
+
+/* ---------- morning ---------- */
+.morning{
+  background:var(--glass-2);
+  border:1px solid var(--glass-3);
+  border-radius:6px;
+  padding:1.5rem;
+}
+.morning-head{
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  flex-wrap:wrap;
+  margin-bottom:1.35rem;
+}
+.morning-note{
+  font-family:var(--mono);
+  font-size:.66rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--dim);
+}
+.morning-steps{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
+  gap:1px;
+  background:var(--glass-3);
+  border:1px solid var(--glass-3);
+  border-radius:4px;
+  overflow:hidden;
+}
+.mstep{background:var(--glass-2);padding:1rem .95rem}
+.mstep .n{
+  font-family:var(--mono);
+  font-size:.6rem;
+  letter-spacing:.14em;
+  color:var(--amber);
+  display:block;
+  margin-bottom:.5rem;
+}
+.mstep .p{font-weight:600;font-size:.9rem;line-height:1.3}
+.mstep .d{color:var(--dim);font-size:.78rem;margin-top:.25rem;line-height:1.35}
+
+/* ---------- evening grid ---------- */
+.days{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:.6rem;
+}
+.day{
+  background:var(--glass-2);
+  border:1px solid var(--glass-3);
+  border-radius:6px;
+  padding:1.1rem .85rem 1.25rem;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+}
+.day.is-retinol{
+  border-color:var(--amber-dim);
+  background:linear-gradient(180deg,rgba(214,155,62,.07),rgba(214,155,62,0) 55%),var(--glass-2);
+}
+.day-kind{
+  font-family:var(--mono);
+  font-size:.58rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--dim);
+}
+.day.is-retinol .day-kind{color:var(--amber)}
+
+ol.steps{list-style:none;display:flex;flex-direction:column;gap:.7rem}
+ol.steps li{
+  display:grid;
+  grid-template-columns:1.35rem 1fr;
+  gap:.2rem;
+  font-size:.83rem;
+  line-height:1.35;
+}
+ol.steps .n{
+  font-family:var(--mono);
+  font-size:.63rem;
+  color:var(--dim);
+  padding-top:.14rem;
+}
+ol.steps .p{font-weight:600;min-width:0;overflow-wrap:anywhere}
+ol.steps .d{
+  grid-column:2;
+  color:var(--dim);
+  font-size:.74rem;
+  line-height:1.35;
+  margin-top:.1rem;
+}
+ol.steps li.is-key .p{color:var(--amber)}
+
+/* ---------- lips ---------- */
+.lips{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:1px;
+  background:var(--glass-3);
+  border:1px solid var(--glass-3);
+  border-radius:6px;
+  overflow:hidden;
+}
+.lips div{background:var(--glass-2);padding:1.05rem 1.1rem}
+.lips .w{
+  font-family:var(--mono);
+  font-size:.6rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--dim);
+  display:block;
+  margin-bottom:.4rem;
+}
+.lips .t{font-size:.86rem;line-height:1.4}
+
+/* ---------- notes ---------- */
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:2.5rem}
+.note{margin-bottom:1.15rem}
+.note:last-child{margin-bottom:0}
+.note h3{
+  font-family:var(--mono);
+  font-size:.68rem;
+  font-weight:600;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--ink);
+  margin-bottom:.35rem;
+}
+.note p{color:var(--label);font-size:.87rem;line-height:1.5}
+.note p + .phases{margin-top:.7rem}
+.note .phases + p{margin-top:.7rem}
+table.phases{border-collapse:collapse;width:100%}
+table.phases td{
+  padding:.42rem 0;
+  border-bottom:1px solid var(--glass-3);
+  font-family:var(--mono);
+  font-size:.68rem;
+  letter-spacing:.08em;
+  color:var(--label);
+}
+table.phases tr:last-child td{border-bottom:none}
+table.phases .ph{color:var(--amber);width:5rem}
+table.phases .pw{color:var(--dim);width:7rem}
+table.phases .pd{text-align:right;color:var(--ink)}
+
+ol.rules{list-style:none;counter-reset:r}
+ol.rules li{
+  counter-increment:r;
+  display:grid;
+  grid-template-columns:2rem 1fr;
+  padding:.8rem 0;
+  border-bottom:1px solid var(--glass-3);
+  font-size:.87rem;
+  line-height:1.45;
+  color:var(--label);
+}
+ol.rules li:first-child{padding-top:0}
+ol.rules li::before{
+  content:counter(r,decimal-leading-zero);
+  font-family:var(--mono);
+  font-size:.66rem;
+  color:var(--amber);
+  padding-top:.18rem;
+}
+ol.rules li b{color:var(--ink);font-weight:600}
+
+/* ---------- key ---------- */
+.legend{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(268px,1fr));
+  gap:.1rem 2.5rem;
+}
+.legend div{
+  display:grid;
+  grid-template-columns:9.5rem 1fr;
+  gap:.75rem;
+  padding:.55rem 0;
+  border-bottom:1px solid var(--glass-3);
+  font-size:.82rem;
+  align-items:baseline;
+}
+.legend .k{
+  font-family:var(--mono);
+  font-size:.66rem;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+  color:var(--amber);
+}
+.legend .v{color:var(--label);line-height:1.35}
+
+footer{
+  margin-top:3rem;
+  padding-top:1.5rem;
+  border-top:1px solid var(--glass-3);
+  font-family:var(--mono);
+  font-size:.66rem;
+  letter-spacing:.1em;
+  color:var(--dim);
+  text-transform:uppercase;
+}
+
+/* ---------- motion ---------- */
+.day,.morning{animation:rise .5s cubic-bezier(.2,.7,.3,1) backwards}
+.morning{animation-delay:.05s}
+.day:nth-child(1){animation-delay:.12s}
+.day:nth-child(2){animation-delay:.17s}
+.day:nth-child(3){animation-delay:.22s}
+.day:nth-child(4){animation-delay:.27s}
+.day:nth-child(5){animation-delay:.32s}
+.day:nth-child(6){animation-delay:.37s}
+.day:nth-child(7){animation-delay:.42s}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---------- responsive ---------- */
+@media (max-width:1080px){
+  .days{grid-template-columns:repeat(3,1fr)}
+}
+@media (max-width:760px){
+  .days{grid-template-columns:repeat(2,1fr)}
+  .cols{grid-template-columns:1fr;gap:2rem}
+  .strip{grid-template-columns:repeat(7,1fr);gap:3px}
+  .seg{height:42px;font-size:.55rem;letter-spacing:.08em}
+}
+@media (max-width:520px){
+  .days{grid-template-columns:1fr}
+  .legend div{grid-template-columns:1fr;gap:.15rem}
+  .masthead{padding-top:2.5rem}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+
+@media print{
+  body{background:#fff;color:#111}
+  .masthead::before{display:none}
+  .morning,.day,.lips div,.seg{background:#fff;border-color:#ccc}
+  .day.is-retinol{background:#fff;border-color:#111;border-width:2px}
+  .sub,.note p,.legend .v,ol.rules li{color:#333}
+  .day-kind,.mstep .d,ol.steps .d,.morning-note,.eyebrow,.band-title,footer{color:#666}
+  .tape{background:#111;color:#fff;box-shadow:none}
+  .days{grid-template-columns:repeat(7,1fr)}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">Protokol · fáze 1 ze 3</div>
+    <h1>Týdenní péče o pleť</h1>
+    <p class="sub">Ráno je invariantní. Mění se jenom večery — dvě noci retinal, jedna maska, jeden peeling, tři regenerační. Od třetího týdne se rozvrh mění, viz fázování.</p>
+
+    <div class="strip">
+      <div class="seg" data-kind="base">PO</div>
+      <div class="seg" data-kind="retinol">ÚT</div>
+      <div class="seg" data-kind="base">ST</div>
+      <div class="seg" data-kind="base">ČT</div>
+      <div class="seg" data-kind="retinol">PÁ</div>
+      <div class="seg" data-kind="ritual">SO</div>
+      <div class="seg" data-kind="ritual">NE</div>
+    </div>
+    <div class="strip-key">
+      <span><i class="dot is-amber"></i>Retinol</span>
+      <span><i class="dot is-ritual"></i>Maska / peeling</span>
+      <span><i class="dot"></i>Regenerace</span>
+    </div>
+  </header>
+
+  <!-- MORNING -->
+  <section class="band">
+    <div class="band-title">Ráno</div>
+    <div class="morning">
+      <div class="morning-head">
+        <span class="tape">Kazdy den</span>
+        <span class="morning-note">Beze změny · pondělí až neděle</span>
+      </div>
+      <div class="morning-steps">
+        <div class="mstep"><span class="n">01</span><span class="p">Cosrx pěna</span><span class="d">Čisticí pěna, vlažná voda</span></div>
+        <div class="mstep"><span class="n">02</span><span class="p">C-Tetra Luxe</span><span class="d">3–4 kapky, obličej — ne oční okolí</span></div>
+        <div class="mstep"><span class="n">03</span><span class="p">Apaisante</span><span class="d">Oční okolí, zrnko rýže, prsteníček</span></div>
+        <div class="mstep"><span class="n">04</span><span class="p">Sisleÿum</span><span class="d">Gel-krém, obličej a krk</span></div>
+        <div class="mstep"><span class="n">05</span><span class="p">Cosrx SPF 50</span><span class="d">Cca 1,5 ml — obličej i krk</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EVENINGS -->
+  <section class="band">
+    <div class="band-title">Večer</div>
+    <div class="days">
+
+      <article class="day">
+        <span class="tape">Pondeli</span>
+        <span class="day-kind">Regenerace</span>
+        <ol class="steps">
+          <li><span class="n">01</span><span class="p">Cosrx pěna</span></li>
+          <li><span class="n">02</span><span class="p">Sérum Affinant</span></li>
+          <li><span class="n">03</span><span class="p">Apaisante</span><span class="d">Oční okolí</span></li>
+          <li><span class="n">04</span><span class="p">Pure White</span><span class="d">Obličej, krk, dekolt</span></li>
+        </ol>
+      </article>
+
+      <article class="day is-retinol">
+        <span class="tape is-amber">Utery</span>
+        <span class="day-kind">Retinol</span>
+        <ol class="steps">
+          <li><span class="n">01</span><span class="p">Cosrx pěna</span></li>
+          <li><span class="n">02</span><span class="p">Čekej 20 min</span><span class="d">Pleť musí být úplně suchá</span></li>
+          <li><span class="n">03</span><span class="p">Apaisante</span><span class="d">Oči a lem rtů — bariéra</span></li>
+          <li class="is-key"><span class="n">04</span><span class="p">Crystal Retinal 6</span><span class="d">2 pumpičky, obličej a krk. Ne oči</span></li>
+          <li><span class="n">05</span><span class="p">Anti-Stress</span></li>
+        </ol>
+      </article>
+
+      <article class="day">
+        <span class="tape">Streda</span>
+        <span class="day-kind">Regenerace</span>
+        <ol class="steps">
+          <li><span class="n">01</span><span class="p">Cosrx pěna</span></li>
+          <li><span class="n">02</span><span class="p">Sérum Calmant</span></li>
+          <li><span class="n">03</span><span class="p">Apaisante</span><span class="d">Oční okolí</span></li>
+          <li><span class="n">04</span><span class="p">Pure White</span></li>
+        </ol>
+      </article>
+
+      <article class="day">
+        <span class="tape">Ctvrtek</span>
+        <span class="day-kind">Výživa</span>
+        <ol class="steps">
+          <li><span class="n">01</span><span class="p">Cosrx pěna</span></li>
+          <li><span class="n">02</span><span class="p">Sérum Affinant</span></li>
+          <li><span class="n">03</span><span class="p">Apaisante</span><span class="d">Oční okolí</span></li>
+          <li><span class="n">04</span><span class="p">Hydra Confort</span><span class="d">Bohatší noc, 1× týdně</span></li>
+        </ol>
+      </article>
+
+      <article class="day is-retinol">
+        <span class="tape is-amber">Patek</span>
+        <span class="day-kind">Retinol</span>
+        <ol class="steps">
+          <li><span class="n">01</span><span class="p">Cosrx pěna</span></li>
+          <li><span class="n">02</span><span class="p">Čekej 20 min</span><span class="d">Pleť musí být úplně suchá</span></li>
+          <li><span class="n">03</span><span class="p">Apaisante</span><span class="d">Oči a lem rtů — bariéra</span></li>
+          <li class="is-key"><span class="n">04</span><span class="p">Crystal Retinal 6</span><span class="d">2 pumpičky, obličej a krk. Ne oči</span></li>
+          <li><span class="n">05</span><span class="p">Anti-Stress</span></li>
+        </ol>
+      </article>
+
+      <article class="day">
+        <span class="tape">Sobota</span>
+        <span class="day-kind">Maska</span>
+        <ol class="steps">
+          <li><span class="n">01</span><span class="p">Cosrx pěna</span></li>
+          <li><span class="n">02</span><span class="p">Argent</span><span class="d">Mastná T-zóna, ucpané póry</span></li>
+          <li><span class="n">02</span><span class="p">nebo Fondant</span><span class="d">Podrážděná pleť</span></li>
+          <li><span class="n">03</span><span class="p">Apaisante</span><span class="d">Oční okolí</span></li>
+          <li><span class="n">04</span><span class="p">Pure White</span></li>
+        </ol>
+      </article>
+
+      <article class="day">
+        <span class="tape">Nedele</span>
+        <span class="day-kind">Peeling</span>
+        <ol class="steps">
+          <li><span class="n">01</span><span class="p">Cosrx pěna</span></li>
+          <li><span class="n">02</span><span class="p">Exfoliant</span><span class="d">Obličej — nikdy oční okolí</span></li>
+          <li><span class="n">03</span><span class="p">Apaisante</span><span class="d">Oční okolí</span></li>
+          <li><span class="n">04</span><span class="p">Anti-Stress</span></li>
+        </ol>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- LIPS -->
+  <section class="band">
+    <div class="band-title">Rty</div>
+    <div class="lips">
+      <div><span class="w">Ráno</span><span class="t">Eucerin balzám SPF 20 — poslední krok po SPF.</span></div>
+      <div><span class="w">Večer</span><span class="t">Vazelína nebo Aquaphor, silná vrstva.</span></div>
+      <div><span class="w">Retinalové večery</span><span class="t">Vazelína na rty <em>i jejich lem</em> ještě před retinalem. Ta bariéra je hlavní důvod, proč ti rty vysychaly.</span></div>
+    </div>
+  </section>
+
+  <!-- NOTES -->
+  <section class="band">
+    <div class="cols">
+      <div>
+        <div class="band-title">Mimo rozvrh</div>
+
+        <div class="note">
+          <h3>Když se holíš</h3>
+          <p>Ráno místo Sisleÿum použij Apaisante Réparatrice. Holíš-li se večer, posuň retinol na jiný den — čerstvě oholená pleť má porušenou bariéru.</p>
+        </div>
+
+        <div class="note">
+          <h3>Ultralift Or</h3>
+          <p>Před akcí nebo po špatné noci. Na oční okolí, 5–15 minut, setřít vlhkým tamponem, teprve pak Apaisante. Kdykoli, nezasahuje do rozvrhu.</p>
+        </div>
+
+        <div class="note">
+          <h3>Když pleť zčervená nebo pálí</h3>
+          <p>Vynech retinol i peeling. Tři až čtyři dny jen Apaisante ráno i večer. Pak se vrať do rozvrhu — ne dřív.</p>
+        </div>
+
+        <div class="note">
+          <h3>Fázování retinalu</h3>
+          <p>Tento list je fáze 1. Nikdy dva večery po sobě, dokud nejsi ve fázi 3.</p>
+          <table class="phases">
+            <tr><td class="ph">Fáze 1</td><td class="pw">Týden 1–2</td><td class="pd">Út, Pá</td></tr>
+            <tr><td class="ph">Fáze 2</td><td class="pw">Týden 3–4</td><td class="pd">Po, St, Pá</td></tr>
+            <tr><td class="ph">Fáze 3</td><td class="pw">Týden 5+</td><td class="pd">Po–Pá + Ne</td></tr>
+          </table>
+          <p>S rostoucí frekvencí ubývá peeling: ve fázi 2 jednou za čtrnáct dní, ve fázi 3 ven. Sobota zůstává jediný večer bez retinalu.</p>
+        </div>
+
+        <div class="note">
+          <h3>Ordinary Retinol 1%</h3>
+          <p>Nekombinuj s retinalem a nestřídej je. Zbytek dojeď na dekolt a hřbety rukou.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="band-title">Pravidla</div>
+        <ol class="rules">
+          <li><b>Vitamín C ráno, retinol večer.</b> Nikdy v jeden krok.</li>
+          <li><b>Peeling a retinol nikdy ve stejný večer</b> ani ve dva po sobě jdoucí.</li>
+          <li><b>Frekvenci zvyšuj jen podle fází.</b> Crystal Retinal je stavěný na každodenní použití, ale až po dvou fázích náběhu.</li>
+          <li><b>Oční okolí jde po séru a před krémem.</b> Výjimka jsou retinolové večery — tam první, jako bariéra.</li>
+          <li><b>SPF každý den.</b> S retinalem v rutině to není volitelné.</li>
+          <li><b>Hodnoť až po 12 týdnech.</b> Kolagen se přestavuje v měsících. Vyfoť se dnes při denním světle.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- KEY -->
+  <section class="band">
+    <div class="band-title">Klíč k názvům</div>
+    <div class="legend">
+      <div><span class="k">Cosrx pěna</span><span class="v">Cosrx čisticí pěna</span></div>
+      <div><span class="k">C-Tetra Luxe</span><span class="v">Medik8 C-Tetra Luxe 14 %</span></div>
+      <div><span class="k">Sisleÿum</span><span class="v">Sisley Sisleÿum Gel-Crème Matifiant</span></div>
+      <div><span class="k">Cosrx SPF 50</span><span class="v">Cosrx opalovací krém SPF 50</span></div>
+      <div><span class="k">Crystal Retinal 6</span><span class="v">Medik8 Crystal Retinal 6 — 0,06 % retinal</span></div>
+      <div><span class="k">Apaisante</span><span class="v">Eisenberg Crème Apaisante Réparatrice</span></div>
+      <div><span class="k">Anti-Stress</span><span class="v">Eisenberg Soin Anti-Stress</span></div>
+      <div><span class="k">Pure White</span><span class="v">Eisenberg Pure White Soin Nourrissant Intégral</span></div>
+      <div><span class="k">Hydra Confort</span><span class="v">Eisenberg Classique Hydra Confort</span></div>
+      <div><span class="k">Sérum Affinant</span><span class="v">Eisenberg Sérum Affinant Visage</span></div>
+      <div><span class="k">Sérum Calmant</span><span class="v">Eisenberg Sérum Calmant Ressourçant</span></div>
+      <div><span class="k">Fondant</span><span class="v">Eisenberg Masque Fondant Réparateur</span></div>
+      <div><span class="k">Argent</span><span class="v">Eisenberg Homme Masque Essentiel Argent</span></div>
+      <div><span class="k">Ultralift Or</span><span class="v">Eisenberg Excellence Masque Ultralift Or</span></div>
+      <div><span class="k">Exfoliant</span><span class="v">Eisenberg Exfoliant Lissant Express</span></div>
+    </div>
+  </section>
+
+  <footer>Zkrácené názvy odpovídají štítkům na lahvičkách · Přehodnotit 12 týdnů po startu</footer>
+
+</div>
+</body>
+</html>

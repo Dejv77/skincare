@@ -1,0 +1,19 @@
+{
+  "name": "Péče o pleť",
+  "short_name": "Pleť",
+  "description": "Týdenní protokol péče o pleť s dlouhodobým sledováním",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#160C1F",
+  "theme_color": "#160C1F",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
