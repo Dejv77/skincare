@@ -52,7 +52,14 @@ Bez tohohle kroku appka funguje, ale mobil a počítač mají oddělené histori
 
 ### 1. Založ projekt
 
-Na [supabase.com](https://supabase.com) → **New project**. Free tier stačí. Region Frankfurt.
+Na [supabase.com](https://supabase.com) → přihlas se přes GitHub → **New project**.
+
+- **Name:** `skincare`
+- **Database Password:** vygeneruj a ulož do správce hesel (potřebuješ ho jen při přímém přístupu k DB, appka ho nepoužívá)
+- **Region:** `Central EU (Frankfurt)`
+- **Plan:** Free
+
+Založení trvá asi minutu.
 
 ### 2. Vytvoř tabulku
 
@@ -76,24 +83,33 @@ create policy "vlastni data" on skincare_state
 
 Row level security je to podstatné — bez ní by anon klíč v kódu umožnil číst data komukoli.
 
-### 3. Doplň klíče
+### 3. Povol adresu appky
 
-**Settings → API**, zkopíruj `Project URL` a `anon public` klíč do prvních řádků `app.js`:
+**Authentication → URL Configuration:**
+
+- **Site URL:** `https://dejv77.github.io/skincare/`
+- **Redirect URLs** → Add URL: `https://dejv77.github.io/skincare/`
+
+Bez toho přihlašovací odkaz z e-mailu skončí na chybové stránce.
+
+### 4. Doplň klíče do kódu
+
+**Settings → API Keys**, zkopíruj `Project URL` a `anon public` klíč do prvních řádků `app.js`:
 
 ```js
 const SUPABASE_URL = "https://xxxxx.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbG...";
 ```
 
-Anon klíč je určený do prohlížeče, veřejný repozitář mu nevadí — chrání ho ta RLS politika výše. `service_role` klíč do kódu **nikdy** nepatří.
+Pak `git add . && git commit -m "Zapnout synchronizaci" && git push`.
 
-### 4. Povol adresu appky
-
-**Authentication → URL Configuration** → do *Redirect URLs* přidej `https://UZIVATEL.github.io/skincare/`. Bez toho přihlašovací odkaz z e-mailu nikam nevede.
+Anon klíč je určený do prohlížeče, veřejný repozitář mu nevadí — chrání ho RLS politika z kroku 2. `service_role` klíč do kódu **nikdy** nepatří; ten obchází všechna pravidla.
 
 ### 5. Přihlas se
 
-Push, otevři appku, záložka **Protokol → Synchronizace**, zadej e-mail. Přijde odkaz, po kliknutí jsi přihlášen. Totéž na druhém zařízení a historie se slučuje.
+Otevři <https://dejv77.github.io/skincare/> → **Protokol → Synchronizace**, zadej e-mail. Přijde odkaz, po kliknutí jsi přihlášen a odznak vpravo nahoře přepne na „Synchronizováno". Totéž na mobilu a historie se slučuje.
+
+Free tier Supabase pozastaví projekt po týdnu úplné nečinnosti — u appky, kterou otevíráš denně, to nenastane. Obnovíš ho jedním kliknutím v dashboardu.
 
 Slučování jede po dnech — vyhrává novější záznam. Když si tedy ráno odškrtneš na mobilu a večer na počítači, obojí se zachová.
 

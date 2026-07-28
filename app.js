@@ -773,6 +773,8 @@ function renderCalendar() {
 function renderProtocol() {
   const phase = PHASES.find(p => p.id === state.phase) || PHASES[0];
 
+  renderAuth();
+
   $("#phase-picker").innerHTML = `
     <div class="band-title">Aktuální fáze</div>
     <div class="phase-row">
@@ -833,7 +835,11 @@ function cloudConfigured() {
 }
 
 async function initCloud() {
-  if (!cloudConfigured()) return;
+  /* I bez konfigurace vykreslit sekci — vysvětlí, jak sync zapnout. */
+  if (!cloudConfigured()) {
+    renderAuth();
+    return;
+  }
 
   cloud = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -842,13 +848,23 @@ async function initCloud() {
 
   cloud.auth.onAuthStateChange((_event, session) => {
     cloudUser = session ? session.user : null;
+    clearAuthFragment();
     renderAuth();
     renderSyncBadge();
     if (cloudUser) pullAndMerge();
   });
 
+  clearAuthFragment();
   if (cloudUser) await pullAndMerge();
   renderAuth();
+}
+
+/* Supabase vrací token ve fragmentu URL. Když ho zpracuje, nemá tam co
+   dělat — ať nezůstane v adresním řádku ani v historii prohlížeče. */
+function clearAuthFragment() {
+  if (/access_token=|error_description=/.test(window.location.hash)) {
+    history.replaceState(null, "", window.location.pathname + window.location.search);
+  }
 }
 
 /* Slučování po dnech: vyhrává novější updatedAt.
@@ -996,9 +1012,13 @@ function renderAuth() {
     const msg = $("#auth-msg");
     if (!email) { msg.textContent = "Zadej e-mail."; return; }
     msg.textContent = "Odesílám…";
+    /* Čistá adresa bez parametrů a fragmentu — window.location.href by
+       po návratu z přihlašovacího odkazu obsahoval token a neodpovídal
+       by povolené Redirect URL v Supabase. */
+    const redirectTo = window.location.origin + window.location.pathname;
     const { error } = await cloud.auth.signInWithOtp({
       email,
-      options: { emailRedirectTo: window.location.href },
+      options: { emailRedirectTo: redirectTo },
     });
     msg.textContent = error
       ? "Nepodařilo se odeslat: " + error.message
