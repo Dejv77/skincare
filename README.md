@@ -48,7 +48,9 @@ Repozitář může být klidně veřejný — je v něm jen kód, žádná data.
 
 ## Synchronizace přes Supabase
 
-**Hotovo a zapnuté** — projekt `skincare` (`xaoihcfkwjlzupwbnhbx`, Frankfurt). Zbývá jen se přihlásit: appka → **Protokol → Synchronizace** → zadej e-mail → klikni na odkaz, který ti přijde.
+**Hotovo a zapnuté** — projekt `skincare` (`xaoihcfkwjlzupwbnhbx`, Frankfurt). Účet `martinek.d@gmail.com` už existuje; přihlas se **e-mailem a heslem** v appce → **Protokol → Synchronizace**. Heslo si tam pod „Změnit heslo" rovnou nastav vlastní.
+
+Přihlášení odkazem v e-mailu zůstává jako záloha (schované pod rozbalovátkem), ale free tier pošle jen dva maily za hodinu — heslo je spolehlivější.
 
 Ověřeno naostro:
 

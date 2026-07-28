@@ -684,6 +684,22 @@ body{
   color:var(--amber);
 }
 .auth-row{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.auth-col{display:flex;flex-direction:column;gap:.5rem;max-width:340px}
+.auth-col .btn{width:100%}
+.auth-more{margin-top:1rem;border-top:1px solid var(--glass-3);padding-top:.85rem}
+.auth-more summary{
+  font-family:var(--mono);
+  font-size:.62rem;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--dim);
+  cursor:pointer;
+  padding:.35rem 0;
+  min-height:32px;
+}
+.auth-more summary:hover{color:var(--label)}
+.auth-more[open] summary{margin-bottom:.6rem;color:var(--label)}
+.auth-more .auth-note{margin-bottom:.6rem}
 .auth-input{
   flex:1;
   min-width:180px;

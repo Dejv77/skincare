@@ -12,6 +12,7 @@ const SUPABASE_ANON_KEY = "sb_publishable_4fe_EuSZeQaRytSzO4QQyw_7PRbpMAY";
 
 const STORAGE_KEY = "skincare.v1";
 const PROTOCOL_START_KEY = "skincare.start";
+const LAST_EMAIL_KEY = "skincare.email";
 
 /* ============================================================
    ROZVRH
@@ -992,23 +993,71 @@ function renderAuth() {
         <button class="btn" id="sync-now">Synchronizovat teď</button>
         <button class="btn ghost" id="logout">Odhlásit</button>
       </div>
+      <details class="auth-more">
+        <summary>Změnit heslo</summary>
+        <div class="auth-row">
+          <input type="password" id="newpw" class="auth-input"
+                 placeholder="Nové heslo, min. 8 znaků" autocomplete="new-password">
+          <button class="btn ghost" id="setpw">Uložit</button>
+        </div>
+        <p class="auth-msg" id="pw-msg"></p>
+      </details>
     `;
     $("#sync-now").onclick = () => pullAndMerge();
     $("#logout").onclick = async () => { await cloud.auth.signOut(); };
+    $("#setpw").onclick = async () => {
+      const pw = $("#newpw").value;
+      const msg = $("#pw-msg");
+      if (pw.length < 8) { msg.textContent = "Heslo musí mít aspoň 8 znaků."; return; }
+      msg.textContent = "Ukládám…";
+      const { error } = await cloud.auth.updateUser({ password: pw });
+      msg.textContent = error ? "Nepodařilo se: " + error.message : "Heslo změněno.";
+      if (!error) $("#newpw").value = "";
+    };
     return;
   }
 
   box.innerHTML = `
     <div class="band-title">Synchronizace</div>
-    <p class="auth-note">Přihlas se e-mailem — přijde ti odkaz, heslo není potřeba.</p>
-    <div class="auth-row">
-      <input type="email" id="email" class="auth-input" placeholder="tvuj@email.cz" autocomplete="email">
-      <button class="btn" id="login">Poslat odkaz</button>
+    <p class="auth-note">Přihlas se, ať máš stejnou historii na mobilu i počítači.</p>
+    <div class="auth-col">
+      <input type="email" id="email" class="auth-input"
+             placeholder="E-mail" autocomplete="username" value="${cloudLastEmail()}">
+      <input type="password" id="password" class="auth-input"
+             placeholder="Heslo" autocomplete="current-password">
+      <button class="btn" id="login">Přihlásit</button>
     </div>
     <p class="auth-msg" id="auth-msg"></p>
+    <details class="auth-more">
+      <summary>Přihlásit odkazem v e-mailu</summary>
+      <p class="auth-note">Když si heslo nepamatuješ. Pozor: Supabase na free tieru pošle jen dva e-maily za hodinu.</p>
+      <div class="auth-row">
+        <button class="btn ghost" id="magic">Poslat odkaz</button>
+      </div>
+    </details>
   `;
 
-  $("#login").onclick = async () => {
+  const doLogin = async () => {
+    const email = $("#email").value.trim();
+    const password = $("#password").value;
+    const msg = $("#auth-msg");
+    if (!email || !password) { msg.textContent = "Vyplň e-mail i heslo."; return; }
+    msg.textContent = "Přihlašuji…";
+    const { error } = await cloud.auth.signInWithPassword({ email, password });
+    if (error) {
+      msg.textContent = /Invalid login/.test(error.message)
+        ? "Špatný e-mail nebo heslo."
+        : "Nepodařilo se přihlásit: " + error.message;
+      return;
+    }
+    localStorage.setItem(LAST_EMAIL_KEY, email);
+    msg.textContent = "";
+  };
+
+  $("#login").onclick = doLogin;
+  $("#password").onkeydown = e => { if (e.key === "Enter") doLogin(); };
+
+  $("#magic").onclick = async () => {
     const email = $("#email").value.trim();
     const msg = $("#auth-msg");
     if (!email) { msg.textContent = "Zadej e-mail."; return; }
@@ -1022,9 +1071,17 @@ function renderAuth() {
       options: { emailRedirectTo: redirectTo },
     });
     msg.textContent = error
-      ? "Nepodařilo se odeslat: " + error.message
+      ? (/rate limit/i.test(error.message)
+          ? "Limit e-mailů vyčerpán — zkus to za hodinu, nebo se přihlas heslem."
+          : "Nepodařilo se odeslat: " + error.message)
       : "Odkaz je na cestě — otevři ho na tomto zařízení.";
   };
+}
+
+/* Předvyplnit e-mail z minula, ať se na mobilu nepíše pokaždé. */
+function cloudLastEmail() {
+  try { return localStorage.getItem(LAST_EMAIL_KEY) || ""; }
+  catch { return ""; }
 }
 
 /* ============================================================
