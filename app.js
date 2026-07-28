@@ -4,10 +4,11 @@
    ============================================================ */
 
 /* ---------- konfigurace ----------
-   Vyplň po založení Supabase projektu (Settings → API).
-   Dokud jsou hodnoty prázdné, appka běží čistě lokálně.        */
-const SUPABASE_URL = "";
-const SUPABASE_ANON_KEY = "";
+   Publishable klíč patří do prohlížeče a smí být ve veřejném repozitáři —
+   data chrání row level security na serveru (auth.uid() = user_id).
+   Secret klíč sem NIKDY nedávej, ten RLS obchází.               */
+const SUPABASE_URL = "https://xaoihcfkwjlzupwbnhbx.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_4fe_EuSZeQaRytSzO4QQyw_7PRbpMAY";
 
 const STORAGE_KEY = "skincare.v1";
 const PROTOCOL_START_KEY = "skincare.start";

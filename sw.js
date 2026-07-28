@@ -1,6 +1,6 @@
 /* Service worker — appka musí fungovat v koupelně i bez signálu.
    Zvyš CACHE při každé změně souborů, jinak se stará verze drží. */
-const CACHE = "skincare-v3";
+const CACHE = "skincare-v4";
 const ASSETS = [
   "./",
   "./index.html",
